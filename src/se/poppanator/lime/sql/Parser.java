@@ -79,6 +79,17 @@ public class Parser
   }
 
   /**
+   * Parse `sql` into a {@link Node} object.
+   * @param sql
+   * @return
+   * @throws Exception
+   */
+  public static Node sql(String sql) throws Exception
+  {
+    return new Parser().parse(sql);
+  }
+
+  /**
    * Parse the SQL query `sql` and turn it into a Lime XML query
    *
    * @param sql
@@ -204,15 +215,19 @@ public class Parser
 
     if (!qattr.containsKey("top") && qattr.containsKey("first")) {
       qattr.put("top", qattr.get("first"));
+      qattr.remove("first");
     }
 
     ArrayList<Node> q = new ArrayList<Node>();
     q.add(Builder.table(table));
+
     if (conds.size() > 0)
       q.add(Builder.conditions(conds));
 
     if (fields.size() > 0) {
       if (sort.size() > 0) {
+        if (sortOrder == null) sortOrder = "ASC";
+        
         for (int i = 0; i < fields.size(); i++) {
           Node n = (Node) fields.get(i);
           if (sort.containsKey((String) n.getValue())) {

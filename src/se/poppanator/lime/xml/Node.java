@@ -15,11 +15,19 @@
 package se.poppanator.lime.xml;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import static org.w3c.dom.Node.ELEMENT_NODE;
@@ -115,7 +123,8 @@ public class Node implements Iterable
    * @param attr
    * @param children
    */
-  public Node(String name, HashMap<String,String> attr, ArrayList<Node> children)
+  public Node(String name, HashMap<String,String> attr,
+              ArrayList<Node> children)
   {
     this(name, attr);
     this.value = children;
@@ -210,6 +219,11 @@ public class Node implements Iterable
   public Node parseXML(String xml) throws Exception
   {
     try {
+
+      if (xml.indexOf("<?xml") > -1) {
+        xml = xml.replaceFirst("<\\?xml.*?\\?>", "");
+      }
+
       DocumentBuilder db;
       db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
@@ -310,6 +324,42 @@ public class Node implements Iterable
     }
 
     return out;
+  }
+
+  /**
+   * Like {@link toString()} or {@link toXML()} except with formatting.
+   * @return
+   */
+  public String toHumanReadbleString()
+  {
+    return toHumanReadbleString(2);
+  }
+
+  /**
+   * Like {@link toString()} or {@link toXML()} except with formatting.
+   * @param indentLevel
+   *  Indent width
+   * @return
+   */
+  public String toHumanReadbleString(int indentWidth)
+  {
+    try {
+
+      Transformer tr = TransformerFactory.newInstance().newTransformer();
+      tr.setOutputProperty(OutputKeys.INDENT, "yes");
+      tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
+                           Integer.toString(indentWidth));
+
+      Source inp = new StreamSource(new StringReader(toXML()));
+      StreamResult outp = new StreamResult(new StringWriter());
+
+      tr.transform(inp, outp);
+
+      return outp.getWriter().toString();
+    }
+    catch (Exception ex) {
+      return toXML();
+    }
   }
 
   /**
