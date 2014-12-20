@@ -30,7 +30,7 @@ public class Builder
    */
   public static Node query(ArrayList<Node> nodes)
   {
-    HashMap<String, String> attr = new HashMap<String, String>();
+    HashMap<String, String> attr = new HashMap<>();
     attr.put("distinct", "1");
     return Builder.query(nodes, attr);
   }
@@ -93,7 +93,7 @@ public class Builder
    */
   public static Node fields(String[] fields)
   {
-    ArrayList<Node> n = new ArrayList<Node>();
+    ArrayList<Node> n = new ArrayList<>();
 
     for (String f : fields) {
       n.add(Builder.field(f));
@@ -111,7 +111,7 @@ public class Builder
    */
   public static Node fields(ArrayList<Object> fields)
   {
-    ArrayList<Node> n = new ArrayList<Node>();
+    ArrayList<Node> n = new ArrayList<>();
 
     for (Object o : fields) {
       if (o instanceof HashMap)
@@ -132,7 +132,7 @@ public class Builder
    */
   public static Node exp(String type)
   {
-    HashMap<String,String> a = new HashMap<String,String>();
+    HashMap<String,String> a = new HashMap<>();
     a.put("type", type);
     return new Node("exp", a);
   }
@@ -145,7 +145,7 @@ public class Builder
    */
   public static Node exp(String type, String value)
   {
-    HashMap<String,String> a = new HashMap<String,String>();
+    HashMap<String,String> a = new HashMap<>();
     a.put("type", type);
     return new Node("exp", a, value);
   }
@@ -163,7 +163,8 @@ public class Builder
   /**
    * Creates a "conditions" node with attributes `attr` and
    * condion nodes of `conds`.
-   * @param conds
+   * @param attr
+   * @param value
    * @return
    */
   public static Node condition(HashMap<String,String> attr,

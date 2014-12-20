@@ -134,14 +134,22 @@ public class Node implements Iterable
    * Creates a node with attributes and string value
    * @param name
    * @param attr
-   * @param children
+   * @param value
    */
   public Node(String name, HashMap<String,String> attr, String value)
   {
     this(name, attr);
     this.value = value;
   }
-
+  
+  /**
+   * Setter for name of the node.
+   * @param name 
+   */
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
   /**
    * Getter for the Node name
@@ -153,6 +161,15 @@ public class Node implements Iterable
   }
 
   /**
+   * Setter for the node attributes.
+   * @param attributes 
+   */
+  public void setAttributes(HashMap<String,String> attributes)
+  {
+    this.attributes = attributes;
+  }
+  
+  /**
    * Getter for the Node attributes
    * @return
    */
@@ -161,6 +178,17 @@ public class Node implements Iterable
     return attributes;
   }
 
+  /**
+   * Set a specific attribute
+   * @param name
+   * @param value 
+   */
+  public void setAttribute(String name, String value)
+  {
+    if (attributes == null) attributes = new HashMap<>();
+    attributes.put(name, value);
+  }
+  
   /**
    * Get a specific attribute
    *
@@ -186,6 +214,15 @@ public class Node implements Iterable
 
     return false;
   }
+  
+  /**
+   * Setter for the node value.
+   * @param value 
+   */
+  public void setValue(Object value)
+  {
+    this.value = value;
+  }
 
   /**
    * Getter for the Node value
@@ -196,6 +233,48 @@ public class Node implements Iterable
   public Object getValue()
   {
     return value;
+  }
+  
+  /**
+   * Adds something to the value.
+   * If {@link Node#value} is a String and <code>o</code> is a string 
+   * <code>o</code> will be appended to {@link Node#value}. 
+   * 
+   * If <code>Node#value</code> is an {@link ArrayList} whatever <code>o</code> is
+   * it will be added to the list.
+   * 
+   * If <code>Node#value</code> is a <code>String</code> and <code>o</code>
+   * is not a <code>String</code> the <code>Node#value</code> will be converted
+   * to an <code>ArrayList</code> and <code>o</code> will be appended to the 
+   * list.
+   * @param o
+   * @return 
+   */
+  public Node add(Object o)
+  {
+    if (value == null) 
+      value = "";
+
+    if (o instanceof String) {
+      if (value instanceof String)
+        value += (String) o;
+      else if (value instanceof ArrayList)
+        ((ArrayList) value).add(o);
+    }
+    else {
+      if (value instanceof String) {
+        ArrayList<Object> tmp = new ArrayList<>();
+        
+        if (!((String)value).isEmpty())
+          tmp.add(value);
+        
+        value = tmp;
+      }
+      
+      ((ArrayList<Object>) value).add(o);
+    }
+
+    return this;
   }
 
   /**
@@ -218,9 +297,10 @@ public class Node implements Iterable
    */
   public Node parseXML(String xml) throws Exception
   {
-    try {
+    if (xml == null) return null;
 
-      if (xml.indexOf("<?xml") > -1) {
+    try {
+      if (xml.contains("<?xml")) {
         xml = xml.replaceFirst("<\\?xml.*?\\?>", "");
       }
 
@@ -259,14 +339,20 @@ public class Node implements Iterable
     if (ch.getLength() > 0) {
       for (int i = 0; i < ch.getLength(); i++) {
         org.w3c.dom.Node item = ch.item(i);
+        
         if (item.getNodeType() == ELEMENT_NODE) {
-          if (value == null) value = new ArrayList<Object>();
+          if (value == null) 
+            value = new ArrayList<>();
+          
           ((ArrayList<Object>) value).add(new Node().parseNode(item));
         }
         else if (item.getNodeType() == TEXT_NODE) {
           String v = item.getNodeValue();
+
           if (v != null && v.trim().length() > 0) {
-            if (value == null) value = new ArrayList<Object>();
+            if (value == null) 
+              value = new ArrayList<>();
+
             ((ArrayList<Object>) value).add(v);
           }
         }
@@ -274,6 +360,7 @@ public class Node implements Iterable
     }
     else {
       String v = o.getNodeValue();
+
       if (v != null && !v.trim().isEmpty())
         value = v;
     }
@@ -304,10 +391,7 @@ public class Node implements Iterable
         out += ">";
 
         for (Object n : cc) {
-          if (n instanceof Node)
-            out += ((Node)n).toXML();
-          else
-            out += (String) n;
+          out += String.valueOf(n);
         }
 
         out += "</" + name + ">";
@@ -319,7 +403,7 @@ public class Node implements Iterable
         if (vv.trim().isEmpty())
           out += " />";
         else
-          out += ">" + vv + "</" + name + ">";
+          out += ">" + lazyEscapeXml(vv) + "</" + name + ">";
       }
     }
 
@@ -337,7 +421,7 @@ public class Node implements Iterable
 
   /**
    * Like {@link toString()} or {@link toXML()} except with formatting.
-   * @param indentLevel
+   * @param indentWidth
    *  Indent width
    * @return
    */
@@ -370,6 +454,19 @@ public class Node implements Iterable
   public String toString()
   {
     return toXML();
+  } 
+
+  /**
+   * Escapes text for XML (really lazily).
+   * @param s
+   * @return 
+   */
+  public String lazyEscapeXml(String s) {
+      return s.replaceAll("&", "&amp;")
+              .replaceAll(">", "&gt;")
+              .replaceAll("<", "&lt;")
+              .replaceAll("\"", "&quot;")
+              .replaceAll("'", "&apos;");
   }
 
   /**
@@ -382,7 +479,7 @@ public class Node implements Iterable
 
     if (attributes != null && attributes.size() > 0) {
       for (String s : attributes.keySet()) {
-        out += " " + s + "=\"" + attributes.get(s) + "\"";
+        out += " " + s + "=\"" + lazyEscapeXml(attributes.get(s)) + "\"";
       }
     }
 
@@ -396,7 +493,7 @@ public class Node implements Iterable
   private void domattrtoattr(NamedNodeMap a)
   {
     if (a.getLength() > 0 && attributes == null)
-      attributes = new HashMap<String, String>();
+      attributes = new HashMap<>();
 
     for (int i = 0; i < a.getLength(); i++) {
       org.w3c.dom.Node n = a.item(i);
