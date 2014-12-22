@@ -106,10 +106,10 @@ public class Parser
     int sortIndex = 0;
     String sortOrder = null;
     String table = null;
-    ArrayList<Object> fields = new ArrayList<Object>();
-    ArrayList<Node> conds = new ArrayList<Node>();
-    HashMap<String,String> qattr = new HashMap<String, String>();
-    HashMap<String,String> sort = new HashMap<String, String>();
+    ArrayList<Object> fields = new ArrayList<>();
+    ArrayList<Node> conds = new ArrayList<>();
+    HashMap<String,String> qattr = new HashMap<>();
+    HashMap<String,String> sort = new HashMap<>();
 
     while (true) {
       t = tokens.get(pos);
@@ -178,7 +178,7 @@ public class Parser
           }
         }
 
-        HashMap<String,String> attr = new HashMap<String, String>();
+        HashMap<String,String> attr = new HashMap<>();
         attr.put("operator", opval);
 
         if (tokens.get(pos + 1).isA(Token.Type.TYPEHINT)) {
@@ -189,17 +189,17 @@ public class Parser
         if (andor != null && andor.lveq("or"))
           attr.put("or", "1");
 
-        ArrayList<Node> cn = new ArrayList<Node>();
+        ArrayList<Node> cn = new ArrayList<>();
         cn.add(Builder.exp("field", t.value));
         cn.add(Builder.exp(val.datatype, valval));
         conds.add(Builder.condition(attr, cn));
       }
       else if (t.isA(Token.Type.GROUP_START) || t.isA(Token.Type.GROUP_END)) {
-        HashMap<String,String> attr = new HashMap<String, String>();
+        HashMap<String,String> attr = new HashMap<>();
         if (t.lveq("or"))
           attr.put("or", "1");
 
-        ArrayList<Node> al = new ArrayList<Node>();
+        ArrayList<Node> al = new ArrayList<>();
         al.add(Builder.exp(t.value));
         conds.add(Builder.condition(attr, al));
       }
@@ -218,7 +218,7 @@ public class Parser
       qattr.remove("first");
     }
 
-    ArrayList<Node> q = new ArrayList<Node>();
+    ArrayList<Node> q = new ArrayList<>();
     q.add(Builder.table(table));
 
     if (conds.size() > 0)
@@ -227,11 +227,11 @@ public class Parser
     if (fields.size() > 0) {
       if (sort.size() > 0) {
         if (sortOrder == null) sortOrder = "ASC";
-        
+
         for (int i = 0; i < fields.size(); i++) {
           Node n = (Node) fields.get(i);
           if (sort.containsKey((String) n.getValue())) {
-            HashMap<String,String> h = new HashMap<String, String>();
+            HashMap<String,String> h = new HashMap<>();
             h.put("field", (String) n.getValue());
             h.put("sortorder", sortOrder);
             h.put("sortindex", sort.get((String) n.getValue()));
@@ -261,7 +261,7 @@ public class Parser
     s.add(0, null);
 
     ArrayList<Token> tokens;
-    tokens = new ArrayList<Token>();
+    tokens = new ArrayList<>();
     tokens.add(new Token(null)); // Add a sentinel
 
     int pos = 1;
@@ -329,7 +329,7 @@ public class Parser
   {
     // Sentinel so we don't peek beyond the string end
     s += "\0";
-    ArrayList<String> ret = new ArrayList<String>();
+    ArrayList<String> ret = new ArrayList<>();
 
     int pos = 0;
 

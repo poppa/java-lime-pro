@@ -20,7 +20,7 @@ import se.poppanator.lime.xml.Node;
  */
 public class Main
 {
-  String sql = 
+  String sql =
   "SELECT DISTINCT\n" +
   "       idsostype, descriptive, soscategory, soscategory.sosbusinessarea,\n" +
   "       webcompany, webperson, web, department, name\n" +
@@ -34,7 +34,8 @@ public class Main
   public static void main(String[] argv)
   {
     Main main = new Main();
-    main.runXmlBuilder();
+    //main.runXmlBuilder();
+    main.runParser();
   }
 
   public void runParser()
@@ -43,35 +44,35 @@ public class Main
 
     try {
       Node query = parser.parse(sql);
-      System.out.println("Node: " + query.toHumanReadbleString(4));
+      System.out.println("Node: " + query.toHumanReadbleString(2));
     }
     catch (Exception ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-  
+
   public void runXmlBuilder()
   {
     Node query;
-    
+
     ArrayList<Node> data = new ArrayList<>();
     ArrayList<Node> conds = new ArrayList<>();
-    
+
     data.add(Builder.table("sostype"));
-    
+
     HashMap<String,String> opeq = new HashMap<>();
     opeq.put("operator", "=");
-    
+
     conds.add(Builder.condition(opeq, new ArrayList<Node>() {{
       add(Builder.exp("field", "active"));
       add(Builder.exp("numeric", "1"));
     }}));
-    
+
     conds.add(Builder.condition(opeq, new ArrayList<Node>() {{
       add(Builder.exp("field", "web"));
       add(Builder.exp("numeric", "1"));
     }}));
-    
+
     data.add(Builder.conditions(conds));
     data.add(Builder.fields(new ArrayList<Object>() {{
       add("idsostype");
@@ -79,12 +80,12 @@ public class Main
       add("soscategory");
       add("soscategory.sosbusinessarea");
     }}));
-    
+
     query = Builder.query(data);
-    
+
     System.out.println("Node: " + query.toHumanReadbleString());
   }
-  
+
   public void runXmlTest()
   {
     Node n = new Node("test");
@@ -92,7 +93,7 @@ public class Main
     n.setAttribute("is-test", "yes");
     System.out.println("Node: " + n);
   }
-  
+
   public void runClient()
   {
     try {
@@ -102,7 +103,7 @@ public class Main
       SampleClient c = new SampleClient();
 
       ArrayList<HashMap<String,String>> res = c.sqlQuery(sql);
-      
+
       if (res != null) {
         for (HashMap<String,String> row : res) {
           System.out.println("* " + row.get("name"));
@@ -111,6 +112,6 @@ public class Main
     }
     catch (Exception ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-    }    
+    }
   }
 }
