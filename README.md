@@ -37,7 +37,7 @@ String sql =
 
 Node limeQuery = Parser.sql(sql);
 
-String result = myWSClient.query(limeQuery.toString());
+String result = myWSClient.getXmlQueryData(limeQuery.toString());
 ```
 
 The SQL query above will result in an XML document like this:
@@ -88,3 +88,21 @@ The SQL query above will result in an XML document like this:
   </fields>
 </query>
 ```
+
+The webservice method `getXmlQueryData` will return a string which is an XML
+tree. This XML tree can be passed to the static `Node.parse` method which
+will turn the result into a `Node` object which also is an `Iterator` object
+so it can easily be traversed.
+
+```java
+// ...
+String result = myWSClient.getXmlQueryData(limeQuery.toString());
+Node res = Node.parse(result);
+
+for (Object child : res) {
+  HashMap<String,String> row = ((Node) child).getAttributes();
+  System.out.println(" * " + row.get("descriptive"));
+}
+```
+
+# 2014-12-22
