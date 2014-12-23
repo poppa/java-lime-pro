@@ -196,7 +196,7 @@ public class Parser
       }
       else if (t.isA(Token.Type.GROUP_START) || t.isA(Token.Type.GROUP_END)) {
         HashMap<String,String> attr = new HashMap<>();
-        if (t.lveq("or"))
+        if (andor != null && andor.lveq("or"))
           attr.put("or", "1");
 
         ArrayList<Node> al = new ArrayList<>();
