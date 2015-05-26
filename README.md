@@ -4,7 +4,8 @@ java-lime-pro
 A Java helper module for the web services of the CRM **Lime PRO** by
 [Lundalogik](https://github.com/lundalogik).
 
-There's a [PHP version](https://github.com/poppa/php-lime-pro) of this module
+There's a [PHP version](https://github.com/poppa/php-lime-pro) and a
+[C# version](https://github.com/poppa/csharp-lime-pro) of this module
 as well.
 
 This is not a full Lime PRO client but rather a helper module for building the
@@ -105,4 +106,4 @@ for (Object child : res) {
 }
 ```
 
-# 2014-12-22
+\# 2014-12-22
