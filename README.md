@@ -78,8 +78,8 @@ The SQL query above will result in an XML document like this:
   </conditions>
   <fields>
     <field>idsostype</field>
-    <field sortindex="1" sortorder="ASC">descriptive</field>
-    <field sortindex="2" sortorder="ASC">soscategory</field>
+    <field sortindex="1" sortorder="desc">descriptive</field>
+    <field sortindex="2" sortorder="desc">soscategory</field>
     <field>soscategory.sosbusinessarea</field>
     <field>webcompany</field>
     <field>webperson</field>
@@ -106,4 +106,4 @@ for (Object child : res) {
 }
 ```
 
-\# 2014-12-22
+\# 2015-06-01
